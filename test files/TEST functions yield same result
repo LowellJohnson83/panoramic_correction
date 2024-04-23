@@ -1,0 +1,65 @@
+import numpy as np
+
+u = 3400
+v = 2780
+
+width = 8000
+height = 4000
+
+pan = 40*(np.pi/180)
+tilt = 23*(np.pi/180)
+
+
+
+
+
+
+# Define the original function
+def panoramic_correction_steps(u, v, pan, tilt, width, height):
+    u_norm = (2 * (u / width)) - 1
+    v_norm = (2 * (v / height)) - 1
+    phi = np.pi * u_norm
+    theta = np.arcsin(v_norm)
+    phi_pan = (phi - pan + np.pi) % (2 * np.pi)
+    theta_pan = theta
+    x_pan = np.cos(theta_pan) * np.sin(phi_pan)
+    y_pan = np.cos(theta_pan) * np.cos(phi_pan)
+    z_pan = np.sin(theta_pan)
+    y_pan_tilt = y_pan * np.cos(tilt)
+    z_pan_tilt = z_pan * np.sin(tilt)
+    phi_pan_tilt = (np.pi / 2) - np.arctan2(y_pan_tilt, x_pan)
+    theta_pan_tilt = (np.pi / 2) - np.arccos(z_pan_tilt)
+    phi_tilt = phi_pan_tilt + pan
+    theta_tilt = theta_pan_tilt
+    u_norm_tilt = phi_tilt / np.pi
+    v_norm_tilt = np.sin(theta_tilt)
+    u_correct = (width / 2) * (u_norm_tilt + 1)
+    v_correct = (height / 2) * (v_norm_tilt + 1)
+    return u_correct, v_correct
+
+# Define the alternative equations
+def panoramic_correction_steps_alternative(u, v, pan, tilt, width, height):
+    u_correct = (width / 2) * (((((np.pi / 2) - np.arctan2(
+        ((np.cos(np.arcsin((2 * (v / height)) - 1)) * np.cos(np.pi * (((np.pi * ((2 * (u / width)) - 1)) - pan + np.pi) % (2 * np.pi)))) * np.cos(tilt)),
+        (np.cos(np.arcsin((2 * (v / height)) - 1)) * np.sin(np.pi * (((np.pi * ((2 * (u / width)) - 1)) - pan + np.pi) % (2 * np.pi))))))) + pan) / np.pi) + 1
+    v_correct = (height / 2) * ((np.sin((np.pi / 2) - np.arccos(((np.sin(np.arcsin((2 * (v / height)) - 1))) * np.sin(tilt))))) + 1)
+    return u_correct, v_correct
+
+# Test various combinations of inputs
+num_samples = 10
+width, height = 800, 600  # Example values for width and height
+tolerance = 1e-6  # Tolerance for comparison
+
+for _ in range(num_samples):
+    u = np.random.uniform(0, width)
+    v = np.random.uniform(0, height)
+    pan = np.random.uniform(0, 2 * np.pi)
+    tilt = np.random.uniform(0, np.pi)
+
+    u_correct_orig, v_correct_orig = panoramic_correction_steps(u, v, pan, tilt, width, height)
+    u_correct_alt, v_correct_alt = panoramic_correction_steps_alternative(u, v, pan, tilt, width, height)
+
+    assert np.abs(u_correct_orig - u_correct_alt) < tolerance, f"u_correct mismatch for inputs: u={u}, v={v}, pan={pan}, tilt={tilt}"
+    assert np.abs(v_correct_orig - v_correct_alt) < tolerance, f"v_correct mismatch for inputs: u={u}, v={v}, pan={pan}, tilt={tilt}"
+
+print("Equations match for all tested cases within tolerance.")

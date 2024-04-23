@@ -1,0 +1,31 @@
+
+I want turn a starting 2d array into a transformed 3d array as follows:
+my starting coordinates are theta and phi (representing latitude and longtitude respectively).
+my trasnformed coordinates are x y and z (representing sideways, depth and height cartersian dimensions)
+
+I want to transform theta/phi into x/y/z as follows:
+x = -sin(360*theta) * sin(180*phi)
+y = -sin(360*theta) * cos(180*phi)
+z = theta
+
+How could I implement that using the np.float32(""") method or is there a more viable way?
+
+
+
+List of equal-area projections
+https://en.wikipedia.org/wiki/Equal-area_projection
+
+
+how do i load aw module from another file in a relative path in python
+how do i load aw module from another file in a relative path in python
+how do i load aw module from another file in a relative path in python
+how do i load aw module from another file in a relative path in python
+how do i load aw module from another file in a relative path in python
+how do i load aw module from another file in a relative path in python
+
+
+
+
+
+Can you simplify my function so that its outputs 'u_correct' and 'v_correct' depend only on the inputs 'u', 'v', 'pan' and 'tilt'
+Here is the code: 
